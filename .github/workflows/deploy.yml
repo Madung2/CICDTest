@@ -18,20 +18,14 @@ jobs:
       run: |
         npm install
         npm run build
-
-    - name: Add key to known hosts
-      run: |
-        mkdir -p ~/.ssh/
-        ssh-keyscan -H 3.39.216.163 >> ~/.ssh/known_hosts
-
     # EC2 서버에 배포
     - name: Deploy to EC2
-      env:
-        PRIVATE_KEY: ${{ secrets.SSH_PRIVATE }}
-        HOST: 3.39.216.163
-        USER: ubuntu
-      run: |
-        echo "$PRIVATE_KEY" > private_key.pem
-        chmod 600 private_key.pem
-        scp -i private_key.pem -r ./* $USER@$HOST:/home/ubuntu/cicd
-        ssh -i private_key.pem $USER@$HOST 'cd /home/ubuntu/cicd && docker-compose -f docker-compose.prod.yml up -d'
+      uses: appleboy/ssh-action@master
+      with:
+        host: 3.39.216.163
+        username: ubuntu
+        key: ${{ secrets.SSH_PRIVATE }}
+        script: |
+          cd /home/ubuntu/cicd
+          git pull origin main
+          docker-compose -f docker-compose.prod.yml up -d
