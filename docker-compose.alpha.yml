@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  nestjs-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development # 알파 환경에서는 개발 빌드를 사용할 수 있습니다.
+
+    environment:
+      - NODE_ENV=development # 알파 환경으로 설정합니다.
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+  db:
+    image: postgres:latest
+    container_name: postgres-alpha # 컨테이너 이름을 알파 환경에 맞게 변경합니다.
+    env_file:
+      - .env # 알파 환경 설정을 포함하는 .env 파일을 사용합니다.
+    environment:
+      - POSTGRES_USER=${ALPHA_DB_USER}
+      - POSTGRES_PASSWORD=${ALPHA_DB_PASSWORD}
+      - POSTGRES_DB=${ALPHA_DB_NAME}
+    ports:
+      - ${ALPHA_DB_PORT}:${ALPHA_DB_PORT}
