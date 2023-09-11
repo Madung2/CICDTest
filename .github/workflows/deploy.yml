@@ -18,9 +18,10 @@ jobs:
       run: |
         npm install
         npm run build
-        
+
     - name: Add key to known hosts
       run: |
+        mkdir -p ~/.ssh/
         ssh-keyscan -H 3.39.216.163 >> ~/.ssh/known_hosts
 
     # EC2 서버에 배포
