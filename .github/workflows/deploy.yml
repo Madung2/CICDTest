@@ -1,23 +1,19 @@
-name: Deploy to EC2
+name: CI&CD
 
 on:
   push:
     branches:
       - main
+      - dev
 
 jobs:
-  deploy:
+  CD:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
-    # # 빌드 단계 (옵션)
-    # - name: Build
-    #   run: |
-    #     npm install
-    #     npm run build
     # EC2 서버에 배포
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
@@ -31,3 +27,15 @@ jobs:
           docker-compose -f docker-compose.prod.yml down
           docker-compose -f docker-compose.prod.yml build
           docker-compose -f docker-compose.prod.yml up -d
+  CI:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Execute dev branch logic
+        run: |
+          echo "This is dev branch!"
+      
+  
