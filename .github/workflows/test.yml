@@ -20,6 +20,7 @@ jobs:
       with:
         node-version: '16'
         cache: 'npm'
+        
     - name: Install Dependencies
       run: npm ci
 
@@ -27,6 +28,7 @@ jobs:
       uses: wearerequired/lint-action@v2
       with:
         tsc: true
+
+    - name: Run Test & Coverage Report #Coverage는 테스트가 어느 부분을 커버하고 있는지를 나타내는 지표
+      run: npm run test:cov
     
-    - name: Run Test
-      run: npm test
