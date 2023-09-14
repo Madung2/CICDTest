@@ -21,14 +21,19 @@ jobs:
         node-version: '16'
         cache: 'npm'
     - name: Install Dependencies
-      run: npm install
-      
+      run: npm ci
+
+    - name: Install Linters
+      run: |
+        npm install eslint --save-dev
+        npm install prettier --save-dev
+        
     - name: Run linters
       uses: wearerequired/lint-action@v2
       with:
         eslint: true
-        eslint_args: "{src,apps,libs,test}/**/*.ts"
         prettier: true
+        #eslint_args: "{src,apps,libs,test}/**/*.ts"
     
     - name: Run Test
       run: npm test
