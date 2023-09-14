@@ -27,6 +27,7 @@ jobs:
       uses: wearerequired/lint-action@v2
       with:
         eslint: true
+        eslint_args: "{src,apps,libs,test}/**/*.ts"
         prettier: true
     
     - name: Run Test
