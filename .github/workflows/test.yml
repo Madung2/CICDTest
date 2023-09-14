@@ -23,17 +23,10 @@ jobs:
     - name: Install Dependencies
       run: npm ci
 
-    - name: Install Linters
-      run: |
-        npm install eslint --save-dev
-        npm install prettier --save-dev
-        
     - name: Run linters
       uses: wearerequired/lint-action@v2
       with:
-        eslint: true
-        eslint_args: "{src,apps,libs,test}/**/*.ts"
-        prettier: true
+        tsc: true
     
     - name: Run Test
       run: npm test
