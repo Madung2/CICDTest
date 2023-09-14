@@ -1,43 +1,31 @@
-name: CI&CD
+name: RUN ECR
 
 on:
   push:
     branches:
       - main
-      - dev
 
 jobs:
   CD:
-    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+    
     # EC2 서버에 배포
-    - name: Deploy to EC2
-      uses: appleboy/ssh-action@master
-      with:
-        host: 3.39.216.163
-        username: ubuntu
-        key: ${{ secrets.SSH_PRIVATE }}
-        script: |
-          cd /home/ubuntu/cicd
-          git pull origin main
+    # - name: Deploy to EC2
+    #   uses: appleboy/ssh-action@master
+    #   with:
+    #     host: 3.39.216.163
+    #     username: ubuntu
+    #     key: ${{ secrets.SSH_PRIVATE }}
+    #     script: |
+    #       cd /home/ubuntu/cicd
+    #       git pull origin main
 
-          docker image prune -a -f
-          docker-compose -f docker-compose.prod.yml down
-          docker-compose -f docker-compose.prod.yml build
-          docker-compose -f docker-compose.prod.yml up -d
-  CI:
-    if: github.ref == 'refs/heads/dev'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
+    #       docker image prune -a -f
+    #       docker-compose -f docker-compose.prod.yml down
+    #       docker-compose -f docker-compose.prod.yml build
+    #       docker-compose -f docker-compose.prod.yml up -d
 
-      - name: Execute dev branch logic
-        run: |
-          echo "This is dev branch!"
-      
-  
