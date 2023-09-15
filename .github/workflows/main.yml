@@ -1,0 +1,52 @@
+name: Test and push Docker image to ECR
+
+on:
+  push:
+    branches:
+      - main
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+jobs:
+  Check_Lint_Test_First:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node 16
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        cache: 'npm'
+        
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Run linters
+      uses: wearerequired/lint-action@v2
+      with:
+        tsc: true
+
+    - name: Run Test & Coverage Report #Coverage는 테스트가 어느 부분을 커버하고 있는지를 나타내는 지표
+      run: npm run test:cov
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION}}
+    - name: Login to Amazon ECR
+      id: login-ecr-step
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build,tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        
